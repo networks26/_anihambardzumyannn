@@ -27,13 +27,13 @@ Find the IPv4 address of the server.
 Write it here:
 
 ```text
-IP address:
+IP address: 212.34.250.15
 ```
 
 Also find the network mask.
 
 ```text
-Network mask:
+Network mask: 255.255.255.240
 ```
 
 You have already seen Ethernet addresses before.
@@ -41,7 +41,7 @@ You have already seen Ethernet addresses before.
 Find the Ethernet address of `eth0` too.
 
 ```text
-Ethernet address:
+Ethernet address: 58:9c:fc:01:f0:a5
 ```
 
 Notice that the same interface has both:
@@ -76,7 +76,7 @@ What is the gateway for the default route?
 Write it here:
 
 ```text
-Default gateway:
+Default gateway: 212.24.250.9
 ```
 
 The default gateway is the router to which the server sends packets when their destination is not on the local network.
@@ -151,7 +151,7 @@ Why do you think IP needs this mechanism?
 
 Think about what could happen if routers accidentally formed a loop.
 
----
+Routers may accidentally form a loop, like lets say there are 2 routers A and B, each of them thinking the other one is a better path to the destination, so they end up sending the packewt baxck and forth. TTL fixes this by guaranteeing the packet has a lifespan, measured in hops.
 
 # 4. Let's deliberately make a packet expire
 
@@ -196,14 +196,15 @@ Time to live exceeded
 Write down the IP address of the machine that answered:
 
 ```text
-TTL 1:
+TTL 1: 212.34.250.9
 ```
 
 What machine do you think this is?
 
 Compare it with the default gateway you found earlier.
 
----
+The machine responding us was the default gateway, since 8.8.8.8 is not reachable from our machine, we sent it to default gateway, and sonce TTL was 1, it decremented to 0, and returned us the message: Time to live exceeded.
+
 
 ## 5. Let the packet travel one router farther
 
@@ -216,17 +217,17 @@ ping -c 1 -t 2 8.8.8.8
 Write down the address that answered:
 
 ```text
-TTL 2:
-```
+TTL 2: 169.254.1.1
 
 Now try:
+
 
 ```sh
 ping -c 1 -t 3 8.8.8.8
 ```
 
 ```text
-TTL 3:
+TTL 3: 185.48.241.8
 ```
 
 Continue:
@@ -239,9 +240,9 @@ ping -c 1 -t 5 8.8.8.8
 Write down what you see.
 
 ```text
-TTL 4:
+TTL 4:  185.48.240.56
 
-TTL 5:
+TTL 5: 185.48.240.57
 ```
 
 You can continue with larger TTL values if you want.
@@ -314,10 +315,13 @@ Do they correspond?
 
 ```text
 What was hop 1?
+212.34.250.9 - corresponded
 
 What was hop 2?
+169.254.1.1 - corresponded
 
 What was hop 3?
+185.48.241.8 - corresponded
 ```
 
 You may also see:
@@ -393,13 +397,13 @@ ipconfig
 Write down its IPv4 address:
 
 ```text
-Windows IPv4 address:
+Windows IPv4 address: 192.168.43.185
 ```
 
 Find its default gateway:
 
 ```text
-Windows default gateway:
+Windows default gateway: 192.168.43.1
 ```
 
 Now try a packet with TTL 1:
@@ -443,9 +447,11 @@ Are they identical?
 Where do they differ?
 
 ```text
-Server first hop:
+Server first hop: 192.168.43.1
 
-Windows first hop:
+Windows first hop: 192.168.43.1
+
+I tried 3 times, they were identical.
 ```
 
 ---
@@ -515,7 +521,7 @@ Where do the two paths become different?
 
 Do they later appear to join the same network again?
 
----
+--- i dont have another laptop with me.
 
 # 11. Think about what you observed
 
@@ -528,7 +534,7 @@ When you send a packet to `8.8.8.8`, does your computer need to know the entire 
 Or does it only need to know where to send the packet **next**?
 
 ```text
-Answer:
+Answer: No, the compiuter has no need to know the entire path, if the address is not in the local network, it will just send it to its default gateway, and then route by route (if TTL does not get expired) the packet will be sent to the destination.
 ```
 
 ### Question 2
@@ -536,7 +542,7 @@ Answer:
 What happens to TTL when an IP packet passes through a router?
 
 ```text
-Answer:
+Answer: decrements by 1.
 ```
 
 ### Question 3
@@ -544,7 +550,7 @@ Answer:
 What happens when TTL reaches zero?
 
 ```text
-Answer:
+Answer: The rpute sends the IP packet back, with the mee=ssage TTL expired.
 ```
 
 ### Question 4
@@ -554,7 +560,7 @@ Why is TTL necessary?
 What could happen without it if routers accidentally created a routing loop?
 
 ```text
-Answer:
+Answer: The packet could be caught in a loop between routers forever.
 ```
 
 ### Question 5
@@ -564,7 +570,7 @@ How can traceroute discover routers between you and a destination?
 Explain it using TTL.
 
 ```text
-Answer:
+Answer: It uses TTL to discove tthe route. First it tries to send the package with TTL = 1, if the destination is not reached, it gets the TTL expired message with the routes IP address, records it, then sends again with incrementing the TTL by 1, 1 by 1, recording all the routes, until it reaches the destination.
 ```
 
 ### Question 6
@@ -582,7 +588,7 @@ university Wi-Fi -> 8.8.8.8
 ```
 
 ```text
-Answer:
+Answer: Routers make independent local decisions, and different starting points may lead to different paths.
 ```
 
 ---
@@ -617,11 +623,11 @@ Compare the result with the address shown by:
 Are they the same?
 
 ```text
-Address on eth0:
+Address on eth0 : 212.34.250.14
 ```
 
 ```text
-Address that the website detects
+Address that the website detects: 212.34.250.14
 ```
 
 Now do
@@ -638,11 +644,11 @@ Is the IP same?
 Write down:
 
 ```text
-Address on eth0:
+Address on eth0: 192.168.22.41
 ```
 
 ```text
-Address that the website detects
+Address that the website detects: 87.241.147.63
 ```
 
 
@@ -709,4 +715,4 @@ Why operating systems limit TTL by fairly small numbers? For Linux and MacOS it 
 
 Speculate below:
 
-
+TTL has 2 missions: to prevent infinite loop between routers(henc it should be small enough to do so fats), and guarantee the IP packet actually reaches the desination (which means that it also should be large enough). Th Operating Systems try to get both of them, 64(128) is small enough to cut the infinite loop fats, and it is also large enough to guarantee reaching the final destination (in real-wolrd scenario it takes approximately like 30-40 hops at most i believe). 
